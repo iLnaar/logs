@@ -46,7 +46,7 @@ class Log {
       }
       s += data.toString();
       if (toConsole) print(s);
-      if (toFile) _writer.writeStringSync(s);
+      if (toFile) _writer.writeStringSync(s + '\n');
       _logToArchive();
     } catch(error) {
       if (onError == null) {
