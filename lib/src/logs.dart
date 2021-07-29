@@ -14,7 +14,7 @@ class Log {
 
 
   Log({
-    this.fileName = 'log.txt',
+    this.fileName = 'program.log',
     this.archiveFolder = 'log_archive\\',
     this.maxLogFileSize = 8388608,
     this.archiveFileTimeLength = 21,
