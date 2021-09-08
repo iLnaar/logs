@@ -55,9 +55,7 @@ class Log {
       if (toFile) {
         _buffer += (s + '\n');
         if (immediatelyToFile || _buffer.length >= maxBufferSize) {
-          _writer.writeStringSync(_buffer);
-          _fileSize += _buffer.length;
-          _buffer = '';
+          saveBufferToFile();
         }
         _logToArchive();
       }
@@ -68,6 +66,13 @@ class Log {
         onError?.call(error);
       }
     }
+  }
+
+
+  void saveBufferToFile() {
+    _writer.writeStringSync(_buffer);
+    _fileSize += _buffer.length;
+    _buffer = '';
   }
 
 
