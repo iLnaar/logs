@@ -92,6 +92,20 @@ class Log {
   }
 
 
+  /// Сохраняет буфер в файл и/или архив, если они уже заполнены
+  ///
+  /// Функция может быть использована при записи данных при помощи функции
+  /// [log()] блоками. Позволяет не записывая новых данных, просто проверить
+  /// размеры буфера и фала, и при необходимости скинуть буфер в файл, а файл
+  /// в архив
+  void saveToFileAndArchiveIfNeed() {
+    if (_buffer.length >= maxBufferSize) {
+      saveBufferToFile();
+    }
+    _logToArchive();
+  }
+
+
   void saveBufferToFile() {
     _writer.writeStringSync(_buffer);
     _fileSize += _buffer.length;
