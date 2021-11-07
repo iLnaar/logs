@@ -4,6 +4,7 @@ import 'dart:io';
 
 
 class Log {
+  String folder;
   String archiveFolder;
   String fileName;
   int maxLogFileSize;
@@ -17,13 +18,14 @@ class Log {
 
 
   Log({
+    this.folder = '\\',
     this.fileName = 'program.log',
     this.archiveFolder = 'log_archive\\',
     this.maxLogFileSize = 8388608,
     this.maxBufferSize = 32768,
     this.archiveFileTimeLength = 21,
     this.onError
-  }): _file = File(fileName) {
+  }): _file = File(folder + fileName) {
     try {
       _writer = _file.openSync(mode: FileMode.writeOnlyAppend);
       _fileSize = _file.lengthSync();
