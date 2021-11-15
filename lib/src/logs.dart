@@ -10,6 +10,8 @@ class Log {
   int maxLogFileSize;
   int maxBufferSize;
   var archiveFileTimeLength;
+  int timeLength;
+  String afterTime;
   late int _fileSize;
   var _buffer = '';
   void Function(dynamic error)? onError;
@@ -24,6 +26,8 @@ class Log {
     this.maxLogFileSize = 8388608,
     this.maxBufferSize = 32768,
     this.archiveFileTimeLength = 21,
+    this.timeLength = 23,
+    this.afterTime = '  ',
     this.onError
   }): _file = File(folder + fileName) {
     try {
@@ -61,8 +65,6 @@ class Log {
   /// позволит не разрывать данные, которые разрывать нежелательно.
   void log(dynamic data, {
     bool showTime = true,
-    int timeLength = 23,
-    String afterTime = '  ',
     bool toConsole = true,
     bool toFile = true,
     bool immediatelyToFile = false,
