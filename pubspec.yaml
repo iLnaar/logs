@@ -6,8 +6,9 @@ repository: https://github.com/iLnaar/logs
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
-# dependencies:
-#   path: ^1.8.0
+dependencies:
+  extender: #^1.0.0
+    path: c:/Users/iLnar/Documents/Projects/dart/extender
 
 dev_dependencies:
   #pedantic: ^1.10.0

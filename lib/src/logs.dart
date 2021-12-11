@@ -1,6 +1,5 @@
-
-
 import 'dart:io';
+import 'package:extender/extender.dart';
 
 
 class Log {
@@ -12,6 +11,7 @@ class Log {
   var archiveFileTimeLength;
   int timeLength;
   String afterTime;
+  int textWidth;
   late int _fileSize;
   var _buffer = '';
   void Function(dynamic error)? onError;
@@ -28,6 +28,7 @@ class Log {
     this.archiveFileTimeLength = 21,
     this.timeLength = 23,
     this.afterTime = '  ',
+    this.textWidth = 80,
     this.onError
   }): _file = File(folder + fileName) {
     try {
@@ -63,22 +64,57 @@ class Log {
   /// принудительно записать вест буфер в файл сразу после печати.
   /// А [doNotArchive] позволяет временно избежать переноса фала в архив. Это
   /// позволит не разрывать данные, которые разрывать нежелательно.
+  ///
+  /// [useWidth] включает режим переноса текста на следующую строку, если его
+  /// ширина превышает [textWidth]. Перенос будет происходить на местах
+  /// [separator]
+  ///
   void log(dynamic data, {
     bool showTime = true,
     bool toConsole = true,
     bool toFile = true,
     bool immediatelyToFile = false,
-    bool doNotArchive = false
+    bool doNotArchive = false,
+    bool useWidth = true,
+    String separator = ' '
   }) {
     try {
-      var s = '';
-      if (showTime) {
-        s = timeString(timeLength) + afterTime;
+      // Рекурсивная печать с разбиением на строки
+      if (useWidth) {
+        final stringList = data.toString()
+            .toWrappedString(textWidth, separator).toList();
+        if (stringList.length > 1) {
+          stringList.forEach((item) {
+            if (item == stringList.first) {
+              log(item,
+                  showTime: true,
+                  toConsole: toConsole,
+                  toFile: toFile,
+                  immediatelyToFile: immediatelyToFile,
+                  doNotArchive: doNotArchive,
+                  useWidth: false);
+            } else {
+              log(' ' * (timeLength + afterTime.length) + item,
+                  showTime: false,
+                  toConsole: toConsole,
+                  toFile: toFile,
+                  immediatelyToFile: immediatelyToFile,
+                  doNotArchive: doNotArchive,
+                  useWidth: false);
+            }
+          });
+          return;
+        }
+        data = stringList[0];
       }
-      s += data.toString();
-      if (toConsole) print(s);
+
+      final string = showTime
+          ? _timeString(timeLength) + afterTime + data.toString()
+          : data.toString();
+
+      if (toConsole) print(string);
       if (toFile) {
-        _buffer += (s + '\n');
+        _buffer += (string + '\n');
         if (immediatelyToFile || _buffer.length >= maxBufferSize) {
           saveBufferToFile();
         }
@@ -119,7 +155,7 @@ class Log {
 
   void _logToArchive() {
     if (_fileSize >= maxLogFileSize) {
-      var time = timeString(archiveFileTimeLength);
+      var time = _timeString(archiveFileTimeLength);
       _file.copySync(archiveFolder + time + ' - ' + fileName);
       _writer.setPositionSync(0);
       _writer.truncateSync(0);
@@ -128,6 +164,6 @@ class Log {
   }
 
 
-  String timeString(int length) =>
+  String _timeString(int length) =>
     DateTime.now().toString().substring(0, length).replaceAll(':', '.');
 }
